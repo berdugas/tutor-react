@@ -1,0 +1,161 @@
+.flashcardSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+/* Progress bar */
+.fcProgress {
+  width: 100%;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.fcProgressBar {
+  height: 100%;
+  background: var(--sky);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.fcProgressLabel {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+  align-self: flex-start;
+}
+
+/* Card wrap — handles perspective for flip */
+.flashcardWrap {
+  width: 100%;
+  max-width: 420px;
+  height: 200px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.flashcard {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease;
+  border-radius: 1.25rem;
+}
+
+.flashcardWrap.flipped .flashcard {
+  transform: rotateY(180deg);
+}
+
+.cardFace {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 4px 20px rgba(26, 50, 96, 0.08);
+  background: var(--card);
+  text-align: center;
+}
+
+.cardBack {
+  background: var(--sky);
+  border-color: var(--sky-dk);
+  transform: rotateY(180deg);
+}
+
+.cardLabel {
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.cardBack .cardLabel {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cardFront {
+  font-family: 'Baloo 2', cursive;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.cardHint {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+
+.cardBackText {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--card);
+  line-height: 1.5;
+}
+
+/* Nav */
+.cardNav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.navBtn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 0.6rem;
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.navBtn:hover:not(:disabled) {
+  background: var(--card);
+  border-color: var(--sky-lt);
+}
+
+.navBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.flipBtn {
+  flex: 1.5;
+  padding: 0.6rem 1rem;
+  background: var(--sky);
+  border: none;
+  border-radius: 0.6rem;
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--card);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.flipBtn:hover {
+  background: var(--sky-dk);
+}

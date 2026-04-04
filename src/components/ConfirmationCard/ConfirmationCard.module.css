@@ -1,0 +1,168 @@
+.confirmArea {
+  padding: 1.5rem 1rem;
+}
+
+.confirmCard {
+  background: var(--card);
+  border-radius: 1.5rem;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 4px 24px rgba(26, 50, 96, 0.08);
+  overflow: hidden;
+}
+
+.confirmHeader {
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.confirmTitle {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.confirmSub {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+/* Thumbnail */
+.thumbWrap {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+}
+
+.thumb {
+  max-height: 160px;
+  max-width: 100%;
+  border-radius: 0.75rem;
+  border: 1.5px solid var(--border);
+  object-fit: contain;
+}
+
+/* Rows */
+.confirmRow {
+  border-bottom: 1px solid var(--border);
+}
+
+.confirmRow:last-of-type {
+  border-bottom: none;
+}
+
+.rowHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s;
+}
+
+.rowHeader:hover {
+  background: var(--bg);
+}
+
+.rowInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.rowLabel {
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.rowValue {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.rowEdit {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.rowEdit.edited {
+  background: var(--leaf-lt);
+  color: var(--leaf);
+}
+
+/* Options */
+.rowOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0 1.5rem 1rem;
+}
+
+.optBtn {
+  padding: 0.4rem 0.75rem;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 2rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.825rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.optBtn:hover {
+  border-color: var(--sky-lt);
+  background: var(--card);
+}
+
+.optBtn.optSelected {
+  background: var(--sky);
+  border-color: var(--sky);
+  color: var(--card);
+  font-weight: 700;
+}
+
+/* Confirm button */
+.confirmBtn {
+  display: block;
+  width: calc(100% - 3rem);
+  margin: 1.25rem 1.5rem;
+  padding: 0.85rem 1.5rem;
+  background: var(--leaf);
+  color: var(--card);
+  border: none;
+  border-radius: 0.75rem;
+  font-family: 'Baloo 2', cursive;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.confirmBtn:hover {
+  background: #2e8f4a;
+  transform: translateY(-1px);
+}
+
+.confirmBtn:active {
+  transform: translateY(0);
+}

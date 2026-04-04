@@ -61,15 +61,107 @@
   color: var(--sun-lt);
 }
 
-.editBtn {
+/* Name display + inline edit */
+.nameDisplay {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nameText {
+  font-family: 'Baloo 2', cursive;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,.85);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nameEditBtn {
   background: rgba(255,255,255,.1);
   border: 1.5px solid rgba(255,255,255,.2);
   border-radius: 50px;
-  padding: 5px 10px;
-  font-size: 14px;
-  color: rgba(255,255,255,.7);
+  padding: 4px 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
   cursor: pointer;
   line-height: 1;
+}
+
+.nameEditBtn:hover {
+  background: rgba(255,255,255,.18);
+}
+
+.nameEdit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nameInput {
+  width: 110px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,.4);
+  background: rgba(255,255,255,.12);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  outline: none;
+}
+
+.nameInput:focus {
+  border-color: var(--sky-lt);
+  background: rgba(255,255,255,.18);
+}
+
+.nameConfirm {
+  background: var(--leaf);
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nameConfirm:hover {
+  background: #2e8f4a;
+}
+
+.nameCancel {
+  background: rgba(255,255,255,.12);
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: rgba(255,255,255,.7);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.nameCancel:hover {
+  background: rgba(255,255,255,.2);
+}
+
+/* Reset button */
+.resetBtn {
+  background: var(--coral);
+  border: none;
+  border-radius: 50px;
+  padding: 5px 12px;
+  font-family: 'Baloo 2', cursive;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.resetBtn:hover {
+  background: #c44d45;
 }
 
 /* Two-column layout */

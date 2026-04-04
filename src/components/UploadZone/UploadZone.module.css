@@ -1,0 +1,236 @@
+.zone {
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Greeting */
+.greeting {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--card);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1.5px solid var(--border);
+}
+
+.greetingAlon {
+  font-size: 2rem;
+}
+
+.greetingName {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.greetingSub {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* Subject selector */
+.subjectLabel {
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.subjectBtns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.subjectBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.subjectBtn:hover {
+  border-color: var(--sky-lt);
+  background: var(--bg);
+}
+
+.subjectBtn.selected {
+  background: var(--sky);
+  border-color: var(--sky);
+  color: var(--card);
+  transform: scale(1.03);
+  font-weight: 700;
+}
+
+.subjectIcon {
+  font-size: 1.1rem;
+}
+
+/* Upload prompt */
+.uploadPrompt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.uploadPrompt.locked .uploadBtns {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.uploadBtns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.upBtn {
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  background: var(--sky);
+  color: var(--card);
+  border: none;
+  border-radius: 0.75rem;
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.upBtn:hover:not(:disabled) {
+  background: var(--sky-dk);
+  transform: translateY(-1px);
+}
+
+.upBtn:disabled {
+  cursor: not-allowed;
+}
+
+.lockHint {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Preview */
+.previewWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preview {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 0.75rem;
+  border: 2px solid var(--border);
+  object-fit: contain;
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  color: var(--sky);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.clearBtn:hover {
+  color: var(--coral);
+}
+
+/* Quality note */
+.qualityNote {
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.qualityError {
+  background: #fff0ef;
+  border: 1.5px solid var(--coral);
+  color: var(--coral);
+}
+
+.qualityWarn {
+  background: #fffbf0;
+  border: 1.5px solid var(--sun);
+  color: #a07010;
+}
+
+/* Analyze button */
+.analyzeBtn {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  background: var(--leaf);
+  color: var(--card);
+  border: none;
+  border-radius: 0.75rem;
+  font-family: 'Baloo 2', cursive;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.analyzeBtn:hover:not(:disabled) {
+  background: #2e8f4a;
+  transform: translateY(-1px);
+}
+
+.analyzeBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tips */
+.tips {
+  background: var(--bg);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1.5px solid var(--border);
+}
+
+.tipsTitle {
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.tipsList {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tipsList li {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.825rem;
+  color: var(--muted);
+}

@@ -1,5 +1,5 @@
 import { useApp } from '../context/AppContext'
-import { callWorker } from '../lib/api'
+import { callWorker, callWorkerText } from '../lib/api'
 import { buildPass1Prompt } from '../prompts/pass1'
 import { buildPass2Prompt } from '../prompts/pass2'
 import { useSession } from './useSession'
@@ -33,7 +33,7 @@ export function useAnalysis() {
     setPendingCheck, setConfirmedContentType,
     setConfirmedSubject, setConfirmedGrade,
     confirmedSubject, confirmedContentType, confirmedGrade,
-    pendingCheck, setLessonData, earnTala,
+    pendingCheck, setLessonDataAndReset, earnTala,
     setAppScreen, setProcessingStep, setProcessingLabel,
     setImageQualityNote
   } = useApp()
@@ -89,6 +89,31 @@ export function useAnalysis() {
     }
   }
 
+  async function runPass1Text(topic) {
+    const studentContext = await fetchContext()
+
+    const check = {
+      topic,
+      subject_detected:      selectedSubject,
+      content_type:          'text_input',
+      grade_level_estimate:  studentContext?.gradeLevel || 'Grade 4',
+      language_detected:     'Filipino',
+      key_vocabulary:        [],
+      competency_clues:      [],
+      content_density:       'moderate',
+      focus_area:            topic,
+      unclear_parts:         '',
+      can_read:              true,
+      image_quality:         'good'
+    }
+
+    setPendingCheck(check)
+    setConfirmedContentType('text_input')
+    setConfirmedSubject(selectedSubject)
+    setConfirmedGrade(studentContext?.gradeLevel || 'Grade 4')
+    setAppScreen('confirming')
+  }
+
   async function runPass2() {
     // Merge confirmed user values onto the check object
     const check = {
@@ -97,6 +122,8 @@ export function useAnalysis() {
       subject_detected: confirmedSubject,
       grade_level_estimate: confirmedGrade
     }
+
+    const isTextMode = check.content_type === 'text_input'
 
     setAppScreen('processing')
     setProcessingStep(3)
@@ -111,15 +138,21 @@ export function useAnalysis() {
       const studentContext = await fetchContext()
 
       // Fetch curriculum chunk from RAG -- non-blocking, returns null if no match
-      const gradeNum = parseInt(studentContext?.gradeLevel?.replace('Grade ', '')) || 4
+      // Use confirmedGrade (user-verified on confirmation card) for accurate retrieval
+      const confirmedGradeNum = parseInt((confirmedGrade || '').replace('Grade ', '')) || null
+      const profileGradeNum   = parseInt((studentContext?.gradeLevel || '').replace('Grade ', '')) || 4
+      const gradeNum = confirmedGradeNum || profileGradeNum
       const curriculumChunk = await fetchCurriculumChunk(
         check.topic,
         check.subject_detected || confirmedSubject,
-        gradeNum
+        gradeNum,
+        isTextMode
       )
 
-      const prompt = buildPass2Prompt(check, studentName, confirmedSubject, studentContext, curriculumChunk)
-      const r2 = await callWorker(prompt, 2500, currentImageBase64, currentImageType)
+      const prompt = buildPass2Prompt(check, studentName, confirmedSubject, studentContext, curriculumChunk, isTextMode)
+      const r2 = isTextMode
+        ? await callWorkerText(prompt, 2500)
+        : await callWorker(prompt, 2500, currentImageBase64, currentImageType)
       const raw = r2.replace(/```json|```/g, '').trim()
       const lesson = JSON.parse(raw)
       lesson._check = check
@@ -133,7 +166,7 @@ export function useAnalysis() {
       setProcessingLabel('Building quiz & flashcards…')
       await sleep(500)
 
-      setLessonData(lesson)
+      setLessonDataAndReset(lesson)
       earnTala(20)
       await saveLesson(lesson, check)
       setAppScreen('results')
@@ -145,5 +178,5 @@ export function useAnalysis() {
     }
   }
 
-  return { runPass1, runPass2 }
+  return { runPass1, runPass1Text, runPass2 }
 }

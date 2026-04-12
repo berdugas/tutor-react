@@ -32,6 +32,28 @@ export default function LessonView() {
         </div>
       </div>
 
+      {/* Worked example */}
+      {lesson.worked_example?.problem && (
+        <div className={styles.lessonCard}>
+          <div className={styles.sectionTitle}>🔍 Let's Work Through It</div>
+          <div className={styles.workedProblem}>{lesson.worked_example.problem}</div>
+          <div className={styles.workedSteps}>
+            {lesson.worked_example.steps?.map((step, i) => (
+              <div key={i} className={styles.workedStep}>
+                <div className={styles.stepNum}>{i + 1}</div>
+                <div className={styles.stepText}>{step}</div>
+              </div>
+            ))}
+          </div>
+          {lesson.worked_example.answer && (
+            <div className={styles.workedAnswer}>
+              <span className={styles.answerLabel}>✅ Answer: </span>
+              {lesson.worked_example.answer}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Remember this */}
       {lesson.remember_this && (
         <div className={styles.rememberBox}>

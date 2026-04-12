@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import styles from './AppShell.module.css'
 
-export default function AppShell({ studentName, tala, leftChildren, rightChildren, onEditName, showReset, onReset }) {
+export default function AppShell({ studentName, tala, profileLoading, leftChildren, rightChildren, onEditName, showReset, onReset }) {
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState('')
   const inputRef = useRef(null)
@@ -57,7 +57,7 @@ export default function AppShell({ studentName, tala, leftChildren, rightChildre
               <button className={styles.nameEditBtn} onClick={startEdit} title="Change name">✏️</button>
             </div>
           )}
-          <div className={styles.navBadge}>⭐ {tala}</div>
+          <div className={styles.navBadge}>⭐ {profileLoading ? '…' : tala}</div>
           {showReset && (
             <button className={styles.resetBtn} onClick={onReset} title="Start over">✕ New</button>
           )}

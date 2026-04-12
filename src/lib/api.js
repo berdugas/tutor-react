@@ -1,6 +1,28 @@
 const WORKER_URL = 'https://aralmate-proxy.maykel-clarin.workers.dev'
 const APP_SECRET = 'aralmate-2026'
 
+export async function callRag(topic, subject, gradeNum) {
+  try {
+    const resp = await fetch(`${WORKER_URL}/rag`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-AralMate-Secret': APP_SECRET
+      },
+      body: JSON.stringify({
+        topic,
+        subject,
+        grade_num: gradeNum
+      })
+    })
+    const data = await resp.json()
+    return data  // { chunk, subject, grade, quarter, domain, similarity } or { chunk: null }
+  } catch (err) {
+    console.error('[AralMate] callRag error:', err.message)
+    return { chunk: null }  // never throw — lesson must always proceed
+  }
+}
+
 export async function callWorker(prompt, maxTokens, imageBase64, imageType) {
   let resp
   try {

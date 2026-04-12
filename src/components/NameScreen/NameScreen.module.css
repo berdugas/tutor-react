@@ -10,22 +10,48 @@
   background: var(--card);
   border-radius: 1.5rem;
   padding: 2.5rem 2rem;
-  max-width: 420px;
+  max-width: 460px;
   width: 100%;
   text-align: center;
   box-shadow: 0 4px 24px rgba(26, 50, 96, 0.10);
   border: 1.5px solid var(--border);
 }
 
+/* Step indicator */
+.stepIndicator {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.2s;
+}
+
+.dotActive {
+  background: var(--sky);
+  transform: scale(1.2);
+}
+
+.dotDone {
+  background: var(--leaf);
+}
+
+/* Alon eagle */
 .alon {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
   animation: bob 2.4s ease-in-out infinite;
 }
 
 @keyframes bob {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50%       { transform: translateY(-8px); }
 }
 
 .inner h2 {
@@ -38,10 +64,19 @@
 .inner p {
   font-family: 'Nunito', sans-serif;
   color: var(--muted);
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.25rem;
   font-size: 1rem;
 }
 
+.question {
+  font-family: 'Baloo 2', cursive !important;
+  font-weight: 700;
+  color: var(--ink) !important;
+  font-size: 1rem !important;
+  margin: 1rem 0 0.6rem !important;
+}
+
+/* Text input */
 .input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -61,6 +96,7 @@
   border-color: var(--sky);
 }
 
+/* Primary CTA button */
 .btn {
   width: 100%;
   padding: 0.75rem 1.5rem;
@@ -72,14 +108,110 @@
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition: background 0.15s, transform 0.1s, opacity 0.15s;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   background: var(--sky-dk);
   transform: translateY(-1px);
 }
 
-.btn:active {
+.btn:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Grade / Quarter option buttons */
+.btnGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.btnRow {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.optionBtn {
+  padding: 0.55rem 0.4rem;
+  border: 2px solid var(--border);
+  border-radius: 0.65rem;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.optionBtn:hover {
+  border-color: var(--sky);
+  background: var(--card);
+}
+
+.optionSelected {
+  border-color: var(--sky) !important;
+  background: var(--sky) !important;
+  color: var(--card) !important;
+}
+
+/* School type big buttons */
+.schoolBtns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.schoolBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 1rem;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Baloo 2', cursive;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+
+.schoolBtn:hover:not(:disabled) {
+  border-color: var(--sky);
+  background: var(--card);
+  transform: translateY(-2px);
+}
+
+.schoolBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.schoolBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.schoolIcon {
+  font-size: 2rem;
+}
+
+.saving {
+  font-family: 'Nunito', sans-serif;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 1rem !important;
+  margin-bottom: 0 !important;
 }

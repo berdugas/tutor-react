@@ -1,4 +1,4 @@
-export function buildPass2Prompt(check, studentName, selectedSubject) {
+export function buildPass2Prompt(check, studentName, selectedSubject, studentContext, curriculumChunk) {
   const languageNote = (check.language_detected === 'Filipino' || check.language_detected === 'Mixed')
     ? 'IMPORTANT: The material may be written in Filipino/Tagalog. Read and understand it in Filipino, but write ALL your output in simple English for a Grade 4 student. EXCEPTION: flashcard fronts must always be the Filipino/Tagalog word — never translate the front to English.'
     : ''
@@ -12,8 +12,38 @@ export function buildPass2Prompt(check, studentName, selectedSubject) {
     ? `VOCABULARY PRIORITY: The following specific words were extracted from the student's actual material — prioritize these in flashcards and vocabulary exercises: ${check.key_vocabulary.join(', ')}. Feature these words prominently in key_terms. Give each a very simple definition with a short everyday Filipino example sentence.`
     : ''
 
+  const knownWordsNote = (studentContext && studentContext.knownWords.length > 0)
+    ? `KNOWN VOCABULARY: ${studentName} already knows these words from previous lessons:
+${studentContext.knownWords.join(', ')}.
+Do NOT re-teach these words in key_terms or flashcards. You may use them
+freely in explanations and examples since ${studentName} already knows them.
+Focus key_terms and flashcards on NEW words from this lesson.`
+    : ''
+
+  const recentTopicsNote = (studentContext && studentContext.recentTopics.length > 0)
+    ? `RECENT LESSONS: ${studentName} has recently studied: ${studentContext.recentTopics.join(', ')}.
+Build on this existing knowledge where relevant. Do not re-introduce concepts
+already covered unless this lesson directly extends them.`
+    : ''
+
+  const curriculumNote = curriculumChunk
+    ? `DEPED MATATAG CURRICULUM REFERENCE:
+${curriculumChunk}
+
+Use the learning competencies above as the foundation for this lesson.
+- The quiz questions must test the specific competencies listed
+- Key terms must align with vocabulary identified in the curriculum
+- The lesson overview must address what the curriculum defines as the
+  content standard for this topic
+- Do not teach concepts beyond what the curriculum specifies for this level`
+    : ''
+
+  const grade      = studentContext?.gradeLevel   || 'Grade 4'
+  const quarter    = studentContext?.schoolQuarter || 1
+  const schoolType = studentContext?.schoolType    || 'private'
+
   return `You are Alon, a warm and encouraging AI tutor for Filipino Grade 4 students (ages 9-11).
-Student profile: ${studentName}, Grade 4, private school Philippines.
+Student profile: ${studentName}, ${grade}, ${schoolType} school Philippines, Quarter ${quarter}.
 Known struggles: slow reading speed, limited Filipino vocabulary, reading comprehension difficulties.
 Priority subjects: Filipino language and Araling Panlipunan.
 You are analyzing a ${check.content_type || 'photo'} from ${studentName}'s ${selectedSubject} class about: "${check.topic}".
@@ -21,6 +51,9 @@ ${languageNote}
 ${densityNote}
 ${handwritingNote}
 ${vocabNote}
+${knownWordsNote}
+${recentTopicsNote}
+${curriculumNote}
 
 Respond ONLY with a valid JSON object (no markdown, no extra text):
 
@@ -64,5 +97,5 @@ Respond ONLY with a valid JSON object (no markdown, no extra text):
 
 IMPORTANT for quiz: Vary the correct answer position across all 5 questions. No position (0,1,2,3) should appear more than twice. Do not follow the example positions above — use your own varied distribution.
 IMPORTANT for flashcards: Exactly 8 cards. Front = always the Filipino/Tagalog word, one single word only, never English, never a phrase. Back = English meaning or simple Filipino definition.
-Make ALL content appropriate for a Grade 4 Filipino student. Base EVERYTHING strictly on what you can see in the image.`
+Make ALL content appropriate for a ${grade} Filipino student. Base EVERYTHING strictly on what you can see in the image.`
 }

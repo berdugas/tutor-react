@@ -2,6 +2,9 @@ import { useApp } from '../context/AppContext'
 import { callWorker } from '../lib/api'
 import { buildPass1Prompt } from '../prompts/pass1'
 import { buildPass2Prompt } from '../prompts/pass2'
+import { useSession } from './useSession'
+import { useStudentContext } from './useStudentContext'
+import { useRag } from './useRag'
 
 function validateLessonData(data) {
   const errors = []
@@ -20,6 +23,10 @@ function validateLessonData(data) {
 const sleep = (ms) => new Promise(r => setTimeout(r, ms))
 
 export function useAnalysis() {
+  const { saveLesson } = useSession()
+  const { fetchContext } = useStudentContext()
+  const { fetchCurriculumChunk } = useRag()
+
   const {
     studentName, selectedSubject,
     currentImageBase64, currentImageType,
@@ -36,7 +43,9 @@ export function useAnalysis() {
     setProcessingStep(1)
     setProcessingLabel('Checking image quality…')
 
-    const prompt = buildPass1Prompt(studentName, selectedSubject)
+    // Fetch student context for Pass 1 prompt
+    const studentContext = await fetchContext()
+    const prompt = buildPass1Prompt(studentName, selectedSubject, studentContext)
 
     try {
       const r1 = await callWorker(prompt, 800, currentImageBase64, currentImageType)
@@ -98,7 +107,18 @@ export function useAnalysis() {
       setProcessingStep(4)
       setProcessingLabel('Writing your lesson summary…')
 
-      const prompt = buildPass2Prompt(check, studentName, confirmedSubject)
+      // Fetch context fresh -- ref pattern was unreliable across re-renders
+      const studentContext = await fetchContext()
+
+      // Fetch curriculum chunk from RAG -- non-blocking, returns null if no match
+      const gradeNum = parseInt(studentContext?.gradeLevel?.replace('Grade ', '')) || 4
+      const curriculumChunk = await fetchCurriculumChunk(
+        check.topic,
+        check.subject_detected || confirmedSubject,
+        gradeNum
+      )
+
+      const prompt = buildPass2Prompt(check, studentName, confirmedSubject, studentContext, curriculumChunk)
       const r2 = await callWorker(prompt, 2500, currentImageBase64, currentImageType)
       const raw = r2.replace(/```json|```/g, '').trim()
       const lesson = JSON.parse(raw)
@@ -115,6 +135,7 @@ export function useAnalysis() {
 
       setLessonData(lesson)
       earnTala(20)
+      await saveLesson(lesson, check)
       setAppScreen('results')
 
     } catch (err) {

@@ -4,7 +4,7 @@ const AppContext = createContext(null)
 
 export function AppProvider({ children }) {
   const [studentName, setStudentName]                       = useState('Estudyante')
-  const [tala, setTala]                                     = useState(145)
+  const [tala, setTala]                                     = useState(0)
   const [selectedSubject, setSelectedSubject]               = useState(null)
   const [currentImageBase64, setImageBase64]                = useState(null)
   const [currentImageType, setImageType]                    = useState(null)
@@ -17,10 +17,13 @@ export function AppProvider({ children }) {
   const [confirmedContentType, setConfirmedContentType]     = useState(null)
   const [confirmedSubject, setConfirmedSubject]             = useState(null)
   const [confirmedGrade, setConfirmedGrade]                 = useState(null)
+  const [gradeLevel, setGradeLevel]                         = useState('Grade 4')
+  const [schoolQuarter, setSchoolQuarter]                   = useState(1)
   const [appScreen, setAppScreen]                           = useState('name')
   const [processingStep, setProcessingStep]                 = useState(1)
   const [processingLabel, setProcessingLabel]               = useState('')
   const [imageQualityNote, setImageQualityNote]             = useState(null)
+  const [profileLoading, setProfileLoading]                 = useState(true)
 
   const earnTala = (n) => setTala(prev => prev + n)
 
@@ -44,7 +47,7 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider value={{
       studentName, setStudentName,
-      tala, earnTala,
+      tala, setTala, earnTala,
       selectedSubject, setSelectedSubject,
       currentImageBase64, setImageBase64,
       currentImageType, setImageType,
@@ -57,10 +60,13 @@ export function AppProvider({ children }) {
       confirmedContentType, setConfirmedContentType,
       confirmedSubject, setConfirmedSubject,
       confirmedGrade, setConfirmedGrade,
+      gradeLevel, setGradeLevel,
+      schoolQuarter, setSchoolQuarter,
       appScreen, setAppScreen,
       processingStep, setProcessingStep,
       processingLabel, setProcessingLabel,
       imageQualityNote, setImageQualityNote,
+      profileLoading, setProfileLoading,
       resetApp
     }}>
       {children}

@@ -27,6 +27,15 @@ export function AppProvider({ children }) {
 
   const earnTala = (n) => setTala(prev => prev + n)
 
+  // Always reset lesson UI state when new lesson data arrives
+  const setLessonDataAndReset = (data) => {
+    setCardIndex(0)
+    setCardFlipped(false)
+    setQuizAnswered({})
+    setIsSimplified(false)
+    setLessonData(data)
+  }
+
   const resetApp = () => {
     setSelectedSubject(null)
     setImageBase64(null)
@@ -51,7 +60,7 @@ export function AppProvider({ children }) {
       selectedSubject, setSelectedSubject,
       currentImageBase64, setImageBase64,
       currentImageType, setImageType,
-      lessonData, setLessonData,
+      lessonData, setLessonData, setLessonDataAndReset,
       isSimplified, setIsSimplified,
       currentCardIndex, setCardIndex,
       cardFlipped, setCardFlipped,

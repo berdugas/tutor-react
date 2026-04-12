@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { useAnalysis } from '../../hooks/useAnalysis'
 import styles from './UploadZone.module.css'
@@ -19,10 +19,11 @@ export default function UploadZone() {
     imageQualityNote, setImageQualityNote,
     appScreen
   } = useApp()
-  const { runPass1 } = useAnalysis()
+  const { runPass1, runPass1Text } = useAnalysis()
 
   const cameraRef = useRef(null)
   const galleryRef = useRef(null)
+  const [topicText, setTopicText] = useState('')
 
   const isProcessing = appScreen === 'processing'
   const hasImage = !!currentImageBase64
@@ -30,6 +31,7 @@ export default function UploadZone() {
   function handleFile(file) {
     if (!file) return
     setImageQualityNote(null)
+    setTopicText('')
     const reader = new FileReader()
     reader.onload = (e) => {
       const dataUrl = e.target.result
@@ -39,6 +41,12 @@ export default function UploadZone() {
       setImageType(file.type || 'image/jpeg')
     }
     reader.readAsDataURL(file)
+  }
+
+  function handleTopicSubmit() {
+    const topic = topicText.trim()
+    if (!topic || !selectedSubject) return
+    runPass1Text(topic)
   }
 
   function clearImage() {
@@ -97,6 +105,34 @@ export default function UploadZone() {
         </div>
         {uploadLocked && (
           <div className={styles.lockHint}>Select a subject above to unlock upload</div>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div className={styles.divider}><span>— o kaya —</span></div>
+
+      {/* Text topic input */}
+      <div className={`${styles.textMode} ${uploadLocked ? styles.locked : ''}`}>
+        <div className={styles.textModeLabel}>📝 I-type ang topic:</div>
+        <input
+          className={styles.topicInput}
+          type="text"
+          placeholder="hal. Pang-uri, Kasaysayan ng Pilipinas, Fractions..."
+          value={topicText}
+          onChange={e => setTopicText(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleTopicSubmit()}
+          disabled={uploadLocked || isProcessing}
+          maxLength={120}
+        />
+        <button
+          className={styles.topicBtn}
+          onClick={handleTopicSubmit}
+          disabled={uploadLocked || isProcessing || !topicText.trim()}
+        >
+          {isProcessing ? '⏳ Ginagawa…' : '🦅 Pag-aralan Ito →'}
+        </button>
+        {uploadLocked && (
+          <div className={styles.lockHint}>Select a subject above to unlock</div>
         )}
       </div>
 

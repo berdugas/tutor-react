@@ -2,6 +2,7 @@ import { useApp } from '../context/AppContext'
 import { callWorker, callWorkerText } from '../lib/api'
 import { buildPass1Prompt } from '../prompts/pass1'
 import { buildPass2Prompt } from '../prompts/pass2'
+import { buildFlashcardPrompt } from '../prompts/flashcards'
 import { useSession } from './useSession'
 import { useStudentContext } from './useStudentContext'
 import { useRag } from './useRag'
@@ -13,8 +14,6 @@ function validateLessonData(data) {
   if (!data.lesson?.overview) errors.push('lesson.overview missing')
   if (!Array.isArray(data.quiz) || data.quiz.length < 3)
     errors.push(`quiz has ${data.quiz?.length || 0} questions (need at least 3)`)
-  if (!Array.isArray(data.flashcards) || data.flashcards.length < 4)
-    errors.push(`flashcards has ${data.flashcards?.length || 0} cards (need at least 4)`)
   if (!Array.isArray(data.lesson?.key_terms) || data.lesson.key_terms.length < 1)
     errors.push('key_terms missing or empty')
   return errors
@@ -33,7 +32,8 @@ export function useAnalysis() {
     setPendingCheck, setConfirmedContentType,
     setConfirmedSubject, setConfirmedGrade,
     confirmedSubject, confirmedContentType, confirmedGrade,
-    pendingCheck, setLessonDataAndReset, earnTala,
+    pendingCheck, setLessonDataAndReset, setFlashcards,
+    setFlashcardsLoading, earnTala,
     setAppScreen, setProcessingStep, setProcessingLabel,
     setImageQualityNote
   } = useApp()
@@ -163,18 +163,50 @@ export function useAnalysis() {
       }
 
       setProcessingStep(5)
-      setProcessingLabel('Building quiz & flashcards…')
+      setProcessingLabel('Building quiz…')
       await sleep(500)
 
+      // Show results immediately — flashcards will load async
       setLessonDataAndReset(lesson)
       earnTala(20)
       await saveLesson(lesson, check)
       setAppScreen('results')
 
+      // Generate flashcards as a separate focused call
+      // This gives Kimi full attention for word selection and definitions
+      generateFlashcards(check, confirmedSubject, studentContext, lesson)
+
     } catch (err) {
       setProcessingLabel(`Error: ${err.message}`)
       setAppScreen('error')
       setTimeout(() => setAppScreen('upload'), 3000)
+    }
+  }
+
+  async function generateFlashcards(check, subject, studentContext, lesson) {
+    setFlashcardsLoading(true)
+    try {
+      // Build a concise lesson summary for flashcard context
+      const lessonSummary = [
+        lesson.lesson?.title || '',
+        lesson.lesson?.overview || '',
+        lesson.lesson?.key_points?.join(' ') || ''
+      ].filter(Boolean).join(' ').slice(0, 500)
+
+      const prompt = buildFlashcardPrompt(check, subject, studentContext, lessonSummary)
+      const raw = await callWorkerText(prompt, 600)
+      const cards = JSON.parse(raw.replace(/```json|```/g, '').trim())
+
+      if (Array.isArray(cards) && cards.length >= 4) {
+        setFlashcards(cards)
+        console.log(`[AralMate] Flashcards: generated ${cards.length} cards`)
+      } else {
+        console.warn('[AralMate] Flashcards: invalid response, keeping empty')
+      }
+    } catch (err) {
+      console.error('[AralMate] Flashcards: generation failed:', err.message)
+    } finally {
+      setFlashcardsLoading(false)
     }
   }
 

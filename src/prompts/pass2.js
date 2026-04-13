@@ -245,9 +245,6 @@ Respond ONLY with a valid JSON object (no markdown, no extra text):
     ]
   },
   "unclear_content": "If any part of the image was unclear or hard to read, briefly mention it here. Empty string if everything was clear.",
-  "flashcards": [
-    {"front": "Filipino word (Tagalog only, one word)", "back": "English meaning or simple definition — must NOT repeat the front word"}
-  ],
   "quiz": [
     {"question": "Question testing the main concept?", "options": ["Option A text","Option B text","Option C text","Option D text"], "correct": 2, "explanation": "Friendly explanation of why this is correct. Max 20 words."},
     {"question": "Question 2?", "options": ["A","B","C","D"], "correct": 0, "explanation": "Explanation."},
@@ -257,9 +254,6 @@ Respond ONLY with a valid JSON object (no markdown, no extra text):
   ]
 }
 
-IMPORTANT for flashcards: Exactly 8 cards. Front = always the Filipino/Tagalog word, one single word only, never English, never a phrase. Back = the EXACT correct English meaning or simple Filipino definition.
-FLASHCARD WORD SELECTION: Choose words that are CENTRAL to what this lesson is teaching — the concept terms, grammar terms, or subject-specific vocabulary a student must remember. Do NOT choose words that merely appeared in example sentences as illustrations. Do NOT use proper nouns (names of specific people, places, or characters from example sentences) as flashcard terms — proper nouns are not reusable vocabulary. Define each word by what it actually means as a standalone word, not by the sentence it appeared in.
-FLASHCARD DEFINITION RULE: The back of the card must NEVER use the same word as the front. The definition must explain what the word IS using completely different words — explain the concept, not repeat the label.
 IMPORTANT for quiz: Vary the correct answer position across all 5 questions. No position (0,1,2,3) should appear more than twice. Do not follow the example positions above — use your own varied distribution.
 ${sourceInstruction}`
 }

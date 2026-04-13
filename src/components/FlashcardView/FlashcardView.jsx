@@ -4,6 +4,7 @@ import styles from './FlashcardView.module.css'
 export default function FlashcardView() {
   const {
     lessonData,
+    flashcards, flashcardsLoading,
     currentCardIndex, setCardIndex,
     cardFlipped, setCardFlipped,
     earnTala
@@ -11,9 +12,33 @@ export default function FlashcardView() {
 
   if (!lessonData) return null
 
-  const { flashcards } = lessonData
+  // Show loading state while flashcards are being generated
+  if (flashcardsLoading) {
+    return (
+      <div className={styles.flashcardSection}>
+        <div className={styles.loadingState}>
+          <div className={styles.loadingAlon}>🦅</div>
+          <div className={styles.loadingText}>Alon is preparing your flashcards…</div>
+          <div className={styles.loadingSubtext}>This takes just a moment</div>
+        </div>
+      </div>
+    )
+  }
+
+  // No flashcards yet (generation failed or not started)
+  if (!flashcards || flashcards.length === 0) {
+    return (
+      <div className={styles.flashcardSection}>
+        <div className={styles.loadingState}>
+          <div className={styles.loadingAlon}>🦅</div>
+          <div className={styles.loadingText}>No flashcards available for this lesson.</div>
+        </div>
+      </div>
+    )
+  }
+
   const total = flashcards.length
-  const card = flashcards[currentCardIndex]
+  const card  = flashcards[currentCardIndex]
   const progress = ((currentCardIndex + 1) / total) * 100
 
   function flipCard() {

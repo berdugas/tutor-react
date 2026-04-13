@@ -6,6 +6,40 @@
   padding: 0.5rem 0;
 }
 
+/* Loading state */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.loadingAlon {
+  font-size: 2.5rem;
+  animation: alon-bob 2s ease-in-out infinite;
+}
+
+@keyframes alon-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.loadingText {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.loadingSubtext {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 /* Progress bar */
 .fcProgress {
   width: 100%;

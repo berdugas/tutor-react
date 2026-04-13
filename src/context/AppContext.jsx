@@ -9,6 +9,8 @@ export function AppProvider({ children }) {
   const [currentImageBase64, setImageBase64]                = useState(null)
   const [currentImageType, setImageType]                    = useState(null)
   const [lessonData, setLessonData]                         = useState(null)
+  const [flashcards, setFlashcards]                         = useState([])
+  const [flashcardsLoading, setFlashcardsLoading]           = useState(false)
   const [isSimplified, setIsSimplified]                     = useState(false)
   const [currentCardIndex, setCardIndex]                    = useState(0)
   const [cardFlipped, setCardFlipped]                       = useState(false)
@@ -33,6 +35,8 @@ export function AppProvider({ children }) {
     setCardFlipped(false)
     setQuizAnswered({})
     setIsSimplified(false)
+    setFlashcards([])          // clear old flashcards
+    setFlashcardsLoading(true) // new lesson incoming, cards will load
     setLessonData(data)
   }
 
@@ -61,6 +65,8 @@ export function AppProvider({ children }) {
       currentImageBase64, setImageBase64,
       currentImageType, setImageType,
       lessonData, setLessonData, setLessonDataAndReset,
+      flashcards, setFlashcards,
+      flashcardsLoading, setFlashcardsLoading,
       isSimplified, setIsSimplified,
       currentCardIndex, setCardIndex,
       cardFlipped, setCardFlipped,

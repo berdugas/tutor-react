@@ -2,7 +2,7 @@
 // This gives Kimi full focused attention on word selection and definition accuracy
 // without competing with lesson, quiz, and worked example generation.
 
-export function buildFlashcardPrompt(check, selectedSubject, studentContext, lessonSummary) {
+export function buildFlashcardPrompt(check, selectedSubject, studentContext, lessonSummary, extractedText = '') {
   const grade    = studentContext?.gradeLevel || 'Grade 4'
   const topic    = check.topic || ''
   const subject  = check.subject_detected || selectedSubject
@@ -13,6 +13,11 @@ export function buildFlashcardPrompt(check, selectedSubject, studentContext, les
     ? `Words extracted from the student's material: ${check.key_vocabulary.join(', ')}`
     : ''
 
+  const extractedWordsNote = extractedText
+    ? `Full text from the student's material (for word selection context):
+${extractedText.slice(0, 800)}`
+    : ''
+
   return `You are a Filipino elementary school vocabulary expert creating flashcards for a ${grade} student.
 
 The student just completed a lesson on: "${topic}" (subject: ${subject})
@@ -21,6 +26,7 @@ Lesson summary for context:
 ${lessonSummary}
 
 ${extractedWords}
+${extractedWordsNote}
 
 Create exactly 8 flashcards for this lesson. Each flashcard must:
 - FRONT: one single Filipino or subject-specific word that is CENTRAL to this lesson — a key concept term, grammar term, or important vocabulary word the student must remember

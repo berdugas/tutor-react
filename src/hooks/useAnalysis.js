@@ -1,6 +1,6 @@
 import { useApp } from '../context/AppContext'
 import { callWorker, callWorkerText } from '../lib/api'
-import { buildPass1Prompt } from '../prompts/pass1'
+import { buildPass1aPrompt, buildPass1bPrompt } from '../prompts/pass1'
 import { buildPass2Prompt } from '../prompts/pass2'
 import { buildFlashcardPrompt } from '../prompts/flashcards'
 import { useSession } from './useSession'
@@ -41,40 +41,65 @@ export function useAnalysis() {
   async function runPass1() {
     setAppScreen('processing')
     setProcessingStep(1)
-    setProcessingLabel('Checking image quality…')
+    setProcessingLabel('Reading the page…')
 
-    // Fetch student context for Pass 1 prompt
     const studentContext = await fetchContext()
-    const prompt = buildPass1Prompt(studentName, selectedSubject, studentContext)
 
     try {
-      const r1 = await callWorker(prompt, 800, currentImageBase64, currentImageType)
-      const check = JSON.parse(r1.replace(/```json|```/g, '').trim())
-
-      setProcessingStep(2)
+      // ── Step 1A: Extract text from image ──────────────────────────
+      const extractionPrompt = buildPass1aPrompt()
+      const r1a = await callWorker(
+        extractionPrompt,
+        600,
+        currentImageBase64,
+        currentImageType
+      )
+      const extraction = JSON.parse(r1a.replace(/```json|```/g, '').trim())
+      console.log('[AralMate] Step 1A extraction:', JSON.stringify(extraction, null, 2))
 
       // Unreadable image — go back to upload
-      if (!check.can_read || check.image_quality === 'unreadable') {
+      if (!extraction.can_read || extraction.image_quality === 'unreadable') {
         setImageQualityNote({
           type: 'error',
-          message: `😕 Alon can't read this image clearly. ${check.quality_note} Please try taking a clearer photo with better lighting.`
+          message: `😕 Alon can't read this image clearly. ${extraction.quality_note} Please try taking a clearer photo with better lighting.`
         })
         setAppScreen('upload')
         return
       }
 
       // Poor but readable — show warning, continue
-      if (check.image_quality === 'poor') {
+      if (extraction.image_quality === 'poor') {
         setImageQualityNote({
           type: 'warn',
-          message: `⚠️ ${check.quality_note} Alon will do his best, but a clearer photo would help!`
+          message: `⚠️ ${extraction.quality_note} Alon will do his best, but a clearer photo would help!`
         })
       }
+
+      setProcessingStep(2)
+      setProcessingLabel('Understanding the content…')
+      console.log('[AralMate] Step 1B input text:', extraction.extracted_text)
+
+      // ── Step 1B: Analyze extracted text ───────────────────────────
+      const analysisPrompt = buildPass1bPrompt(
+        extraction.extracted_text,
+        selectedSubject,
+        studentName,
+        studentContext
+      )
+      const r1b = await callWorkerText(analysisPrompt, 800)
+      const check = JSON.parse(r1b.replace(/```json|```/g, '').trim())
+      console.log('[AralMate] Step 1B analysis:', JSON.stringify(check, null, 2))
+
+      // Merge extraction fields into check
+      check.extracted_text = extraction.extracted_text
+      check.image_quality  = extraction.image_quality
+      check.quality_note   = extraction.quality_note
+      check.can_read       = extraction.can_read
 
       setProcessingLabel(`Topic found: ${check.topic}`)
       await sleep(600)
 
-      // Initialise confirmed values from Pass 1 detection
+      // Initialise confirmed values from analysis
       setPendingCheck(check)
       setConfirmedContentType(check.content_type || 'unknown')
       setConfirmedSubject(check.subject_detected || selectedSubject)
@@ -193,7 +218,7 @@ export function useAnalysis() {
         lesson.lesson?.key_points?.join(' ') || ''
       ].filter(Boolean).join(' ').slice(0, 500)
 
-      const prompt = buildFlashcardPrompt(check, subject, studentContext, lessonSummary)
+      const prompt = buildFlashcardPrompt(check, subject, studentContext, lessonSummary, check.extracted_text || '')
       const raw = await callWorkerText(prompt, 600)
       const cards = JSON.parse(raw.replace(/```json|```/g, '').trim())
 

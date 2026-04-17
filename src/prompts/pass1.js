@@ -3,23 +3,29 @@
 // No analysis, no topic detection, no vocabulary — just read the page.
 
 export function buildPass1aPrompt() {
-  return `You are an expert at reading Philippine elementary school textbook pages.
+  return `You are an expert at reading Philippine elementary school textbook pages and worksheets.
 
-Your ONLY job is to transcribe all readable text from this image.
+Your ONLY job is to transcribe all readable text from this image exactly as printed.
 
 READING RULES:
-- Read ONLY dark, clearly printed text that reads left to right
-- IGNORE all faint, reversed, or mirrored text (bleed-through from reverse side)
-- Preserve the structure: titles, table columns, numbered lists, questions
-- Include ALL text you can read — headers, labels, table content, questions
-- Do NOT analyze, summarize, or interpret — just transcribe
+- Transcribe the PRIMARY text — the text that is darkest, clearest, and most intentionally printed
+- If faint ghost text appears behind the main text (bleed-through from the reverse side of the page), ignore it — focus only on the dominant, clearly printed text
+- Preserve the structure exactly: titles, numbered lists, sections, questions, columns
+- Copy words exactly as written — do NOT correct spelling, do NOT paraphrase, do NOT summarize
+- Include ALL primary text — headers, definitions, examples, questions, answer blanks
+- Do NOT analyze, interpret, or rewrite anything — only transcribe
 
-Respond ONLY with a JSON object:
+QUALITY ASSESSMENT:
+- "good": text is clear and you can read it confidently
+- "poor": text is partially readable but some words are uncertain
+- "unreadable": image is too blurry, dark, or distorted to extract meaningful text
+
+Respond ONLY with a valid JSON object, no markdown:
 {
   "can_read": true | false,
   "image_quality": "good" | "poor" | "unreadable",
   "quality_note": "One sentence if poor or unreadable. Empty string if good.",
-  "extracted_text": "All readable text from the image, preserving structure. Empty string if unreadable."
+  "extracted_text": "All readable primary text from the image, preserving structure. Empty string if unreadable."
 }`
 }
 

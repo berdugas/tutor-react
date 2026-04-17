@@ -33,8 +33,13 @@ export async function callWorkerText(prompt, maxTokens) {
         'X-AralMate-Secret': APP_SECRET
       },
       body: JSON.stringify({
-        model: 'moonshot-v1-8k-vision-preview',
+        model: 'kimi-k2.5',
         max_tokens: maxTokens,
+        // Disable thinking mode — we need structured JSON output, not reasoning chains.
+        // Thinking mode burns tokens on internal reasoning before writing output,
+        // which causes truncation on dense content.
+        // Note: 'thinking' is a top-level field in the raw Kimi API (not extra_body).
+        thinking: { type: 'disabled' },
         messages: [{
           role: 'user',
           content: prompt
@@ -62,8 +67,12 @@ export async function callWorker(prompt, maxTokens, imageBase64, imageType) {
         'X-AralMate-Secret': APP_SECRET
       },
       body: JSON.stringify({
-        model: 'moonshot-v1-8k-vision-preview',
+        model: 'kimi-k2.5',
         max_tokens: maxTokens,
+        // Disable thinking mode — structured JSON output does not benefit from
+        // chain-of-thought reasoning, and thinking tokens burn the output budget.
+        // Note: 'thinking' is a top-level field in the raw Kimi API (not extra_body).
+        thinking: { type: 'disabled' },
         messages: [{
           role: 'user',
           content: [

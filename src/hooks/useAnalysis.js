@@ -43,18 +43,61 @@ export function useAnalysis() {
     setProcessingStep(1)
     setProcessingLabel('Reading the page…')
 
+    // DEBUG — checkpoint 1
+    console.log('[AralMate DEBUG] runPass1 started')
+    console.log('[AralMate DEBUG] image state — base64 length:', currentImageBase64?.length ?? 'NULL', '| type:', currentImageType ?? 'NULL')
+    console.log('[AralMate DEBUG] selected subject:', selectedSubject)
+
+    // DEBUG — checkpoint 2
+    console.log('[AralMate DEBUG] calling fetchContext…')
     const studentContext = await fetchContext()
+    console.log('[AralMate DEBUG] fetchContext returned:', studentContext ? 'ok' : 'null')
 
     try {
+      // DEBUG — checkpoint 3
+      console.log('[AralMate DEBUG] building Pass 1A prompt…')
       // ── Step 1A: Extract text from image ──────────────────────────
       const extractionPrompt = buildPass1aPrompt()
+
+      // DEBUG — checkpoint 4
+      console.log('[AralMate DEBUG] calling callWorker for Pass 1A…')
       const r1a = await callWorker(
         extractionPrompt,
-        600,
+        2000,
         currentImageBase64,
         currentImageType
       )
-      const extraction = JSON.parse(r1a.replace(/```json|```/g, '').trim())
+      // DEBUG — checkpoint 5
+      console.log('[AralMate DEBUG] callWorker Pass 1A raw response length:', r1a?.length ?? 'NULL')
+      console.log('[AralMate DEBUG] callWorker Pass 1A raw (first 300 chars):', r1a?.slice(0, 300))
+
+      // Strip markdown fences then attempt parse.
+      // If the response was truncated mid-JSON, attempt a best-effort repair
+      // by closing any open string and the JSON object before parsing.
+      let cleaned = r1a.replace(/```json|```/g, '').trim()
+      let extraction
+      try {
+        extraction = JSON.parse(cleaned)
+      } catch {
+        // Best-effort repair: close open string + close object
+        console.warn('[AralMate DEBUG] JSON parse failed on raw response, attempting repair…')
+        let repaired = cleaned
+        // If there's an odd number of unescaped quotes, close the string
+        const quoteCount = (repaired.match(/(?<!\\)"/g) || []).length
+        if (quoteCount % 2 !== 0) repaired += '"'
+        // Close the object if not already closed
+        if (!repaired.trimEnd().endsWith('}')) repaired += '}'
+        try {
+          extraction = JSON.parse(repaired)
+          console.warn('[AralMate DEBUG] JSON repair succeeded')
+          // Mark as poor quality since we had a truncated response
+          extraction.image_quality = extraction.image_quality || 'poor'
+          extraction.quality_note = 'Response was truncated — extracted text may be incomplete.'
+        } catch (repairErr) {
+          console.error('[AralMate DEBUG] JSON repair also failed:', repairErr.message)
+          throw new Error('Kimi returned an incomplete response. Please try again.')
+        }
+      }
       console.log('[AralMate] Step 1A extraction:', JSON.stringify(extraction, null, 2))
 
       // Unreadable image — go back to upload
@@ -108,6 +151,9 @@ export function useAnalysis() {
       setAppScreen('confirming')
 
     } catch (err) {
+      // DEBUG — catch block
+      console.error('[AralMate DEBUG] runPass1 CATCH:', err.message)
+      console.error('[AralMate DEBUG] runPass1 CATCH full error:', err)
       setProcessingLabel(`Error: ${err.message}`)
       setAppScreen('error')
       setTimeout(() => setAppScreen('upload'), 3000)

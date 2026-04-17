@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { useAnalysis } from '../../hooks/useAnalysis'
+import { preprocessImage } from '../../lib/imagePreprocess'
 import styles from './UploadZone.module.css'
 
 const SUBJECTS = [
@@ -24,23 +25,25 @@ export default function UploadZone() {
   const cameraRef = useRef(null)
   const galleryRef = useRef(null)
   const [topicText, setTopicText] = useState('')
+  const [preprocessing, setPreprocessing] = useState(false)
 
   const isProcessing = appScreen === 'processing'
   const hasImage = !!currentImageBase64
 
-  function handleFile(file) {
+  async function handleFile(file) {
     if (!file) return
     setImageQualityNote(null)
     setTopicText('')
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const dataUrl = e.target.result
-      // Extract base64 part
-      const base64 = dataUrl.split(',')[1]
-      setImageBase64(base64)
-      setImageType(file.type || 'image/jpeg')
-    }
-    reader.readAsDataURL(file)
+    setPreprocessing(true)
+
+    const result = await preprocessImage(file, studentName)
+    setPreprocessing(false)
+
+    if (result.qualityNote) setImageQualityNote(result.qualityNote)
+    if (result.status === 'hard_block') return
+
+    setImageBase64(result.base64)
+    setImageType(result.imageType)
   }
 
   function handleTopicSubmit() {
@@ -153,6 +156,14 @@ export default function UploadZone() {
         onChange={e => handleFile(e.target.files[0])}
       />
 
+      {/* Preprocessing indicator */}
+      {preprocessing && (
+        <div className={styles.preprocessingNote}>
+          <span className={styles.preprocessingDot} />
+          Tinitingnan ang larawan…
+        </div>
+      )}
+
       {/* Image preview */}
       {hasImage && (
         <div className={styles.previewWrap}>
@@ -169,7 +180,11 @@ export default function UploadZone() {
 
       {/* Image quality note */}
       {imageQualityNote && (
-        <div className={`${styles.qualityNote} ${imageQualityNote.type === 'error' ? styles.qualityError : styles.qualityWarn}`}>
+        <div className={`${styles.qualityNote} ${
+          imageQualityNote.type === 'error' ? styles.qualityError :
+          imageQualityNote.type === 'warn'  ? styles.qualityWarn  :
+          styles.qualityInfo
+        }`}>
           {imageQualityNote.message}
         </div>
       )}

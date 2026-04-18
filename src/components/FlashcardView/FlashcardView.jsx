@@ -80,6 +80,9 @@ export default function FlashcardView() {
           <div className={`${styles.cardFace} ${styles.cardBack}`}>
             <div className={styles.cardLabel}>DEFINITION</div>
             <div className={styles.cardBackText}>{card.back}</div>
+            {card.example && (
+              <div className={styles.cardExample}>{card.example}</div>
+            )}
           </div>
         </div>
       </div>

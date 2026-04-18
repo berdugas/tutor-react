@@ -4,6 +4,59 @@
   gap: 1rem;
 }
 
+.objectivePill {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 0.75rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sky-dk);
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.hookCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.hookAlon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.hookBubble {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.hookLabel {
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sky);
+}
+
+.hookText {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
 .lessonCard {
   background: var(--card);
   border-radius: 1rem;

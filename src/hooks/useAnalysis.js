@@ -221,9 +221,14 @@ export function useAnalysis() {
       )
 
       const prompt = buildPass2Prompt(check, studentName, confirmedSubject, studentContext, curriculumChunk, isTextMode)
+
+      // Pass 2 token budget: 4000 tokens.
+      // The full lesson JSON schema is large — overview (6-8 sentences), worked example,
+      // 4 key points, key terms, 5 quiz questions with options and explanations.
+      // 2500 was too tight for dense pages and caused silent truncation + parse failure.
       const r2 = isTextMode
-        ? await callWorkerText(prompt, 2500)
-        : await callWorker(prompt, 2500, currentImageBase64, currentImageType)
+        ? await callWorkerText(prompt, 4000)
+        : await callWorker(prompt, 4000, currentImageBase64, currentImageType)
       const raw = r2.replace(/```json|```/g, '').trim()
       const lesson = JSON.parse(raw)
       lesson._check = check

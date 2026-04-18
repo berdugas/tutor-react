@@ -113,6 +113,36 @@ IMPORTANT: Science is an English-medium subject. Write the problem, ALL steps, a
 - answer: State the conclusion clearly in one sentence.`
 }
 
+const BILINGUAL_BRIDGING_NOTE = `BILINGUAL BRIDGING RULE — FOR ALL KEY TERMS AND VOCABULARY:
+When introducing any difficult or Academic Filipino vocabulary term in the overview, key_points, or key_terms, always explain it using the three-layer bridge — in this exact order:
+1. English equivalent (the word the student likely already knows)
+2. Casual Tagalog or household equivalent (a familiar everyday form)
+3. The Academic Filipino term used naturally in a sample sentence
+
+Example format: "Ang salitang 'magalang' — sa English, ito ay 'respectful.' Sa bahay, sinasabi nating 'may galang.' Sa ating leksyon: 'Magalang si Miguel sa kanyang mga guro.'"
+
+This bridge applies to any term a Grade 4 private school student (who thinks primarily in English) might not immediately recognize. If the term is already common vocabulary (e.g., 'nanay', 'bahay', 'araw'), skip the bridge and use the word directly.
+
+For Mathematics and Science (English-medium subjects): the bridge is reversed — introduce the English term first, then provide a Filipino-context example sentence. Do not translate Math or Science technical terms into Filipino.`
+
+const QUIZ_QUALITY_NOTE = `QUIZ QUALITY RULES — APPLY TO ALL 5 QUESTIONS:
+
+DIFFICULTY SPREAD (required):
+- Question 1: Easy — tests direct recall of the main concept. A student who read the lesson should get this right.
+- Questions 2, 3, 4: Medium — tests understanding and application. Requires thinking, not just recall.
+- Question 5: Challenging — tests deeper understanding or application in a new context. A student must truly understand the concept, not just memorize it.
+
+MATERIAL GROUNDING (required — at least 2 of 5 questions):
+At least 2 questions must reference specific content from the student's actual material — a specific word, sentence, or example that appeared on the scanned page or that was identified in the topic. This makes the quiz feel directly relevant to what the student just studied, not generic.
+If in text-input mode (no scanned material), at least 2 questions must use the specific examples from the lesson overview you just generated.
+
+WRONG ANSWER EXPLANATIONS (required — all 5 questions):
+The explanation field must not only say why the correct answer is right — it must also briefly address why the most tempting wrong answer is wrong. Students learn more from understanding their mistakes than from simply being told the right answer.
+Example: "Tama! Ang 'malaki' ay pang-uri — naglalarawan ito ng pangngalan. Ang 'tumakbo' ay pandiwa, hindi pang-uri."
+
+DISTRACTOR QUALITY (required):
+Wrong answer choices must be plausible — they should be answers a student who partially understands the topic might genuinely choose. Never use obviously wrong or nonsensical distractors. The wrong answers should represent common misconceptions or related-but-incorrect concepts.`
+
 export function buildPass2Prompt(check, studentName, selectedSubject, studentContext, curriculumChunk, isTextMode = false) {
   const grade      = studentContext?.gradeLevel   || 'Grade 4'
   const quarter    = studentContext?.schoolQuarter || 1
@@ -175,6 +205,22 @@ Use the learning competencies above as the foundation for this lesson ONLY IF th
 - Do not teach concepts beyond what the curriculum specifies for this level`
     : ''
 
+  const culturalAnchorsNote = `CULTURAL ANCHORS RULE — APPLIES TO ALL CONTENT IN THIS RESPONSE:
+All examples, sample sentences, quiz questions, and flashcard example sentences
+must use Filipino cultural references. This is non-negotiable.
+Preferred references:
+- Filipino foods: adobo, kanin, sinigang, lugaw, bibingka, pandesal, puto, taho, halo-halo, bangus, tilapia
+- Family terms: Nanay, Tatay, Lolo, Lola, Ate, Kuya, Tita, Tito
+- Filipino animals: kalabaw, manok, baboy, bangus, maya, agila, sarimanok
+- Philippine places: Mayon, Pinatubo, Luneta, Intramuros, palengke, paaralan, probinsya, dagat, bundok
+- Everyday situations: maghapunan, mag-aral, magluto, magtanim, mag-uwi ng pasalubong
+- Filipino names: Miguel, Ana, Juan, Maria, Cardo, Nena
+
+NEVER use generic Western examples. Do not write "The big dog ran fast" — write
+"Ang malaking kalabaw ay mabilis tumakbo." Do not write "The hot soup" — write
+"Ang mainit na sabaw." If the subject is Mathematics or Science, use Filipino
+contexts for word problems and examples.`
+
   const sourceDescription = isTextMode
     ? `${studentName} wants to learn about the ${selectedSubject} topic: "${check.topic}".
 This is a Philippine DepEd MATATAG curriculum topic for ${grade} students.
@@ -207,6 +253,9 @@ ${knownWordsNote}
 ${recentTopicsNote}
 ${curriculumNote}
 ${workedExampleNote}
+${culturalAnchorsNote}
+${BILINGUAL_BRIDGING_NOTE}
+${QUIZ_QUALITY_NOTE}
 
 Respond ONLY with a valid JSON object (no markdown, no extra text):
 
@@ -215,6 +264,8 @@ Respond ONLY with a valid JSON object (no markdown, no extra text):
   "subject": "${check.subject_detected || selectedSubject}",
   "intro": "2-3 friendly, warm sentences addressing ${studentName} by name, telling them what this lesson is about and why it's interesting. Talk directly to them as 'you'. Be exciting and encouraging!",
   "lesson": {
+    "hook": "1-2 sentences connecting this topic to something from a Filipino child's everyday life. Reference something Miguel could actually experience — a meal, a family moment, weather, a place, a school situation. Address Miguel directly as 'you'. End with a question or a surprising connection that makes him want to read on. Write in English. Max 40 words.",
+    "objective": "One sentence in Filipino starting with 'Sa katapusan ng araling ito,' that tells Miguel exactly what skill or knowledge he will have by the end. Be specific — not 'matututunan mo ang lesson' but 'malalaman mo kung paano ginagamit ang pang-uri sa paglalarawan ng mga bagay sa iyong paligid.' Max 30 words.",
     "title": "Clear lesson title (max 8 words)",
     "overview": "6-8 sentences that FULLY teach the concept — not just define it. Structure it like a real classroom lesson: (1) Define the concept clearly using the precise DepEd definition. (2) Explain HOW to identify or use it with a concrete step-by-step example using everyday Filipino life (food, family, school, places). (3) Give a SECOND example that shows a different application of the same concept. (4) Explain why this concept matters or how it connects to what the student already knows. A student who has never seen this concept before must understand it completely after reading this.",
     "overview_simplified": "The same explanation but even simpler — as if explaining to a 7-year-old. Use very short sentences. Max 3 sentences.",
@@ -246,11 +297,11 @@ Respond ONLY with a valid JSON object (no markdown, no extra text):
   },
   "unclear_content": "If any part of the image was unclear or hard to read, briefly mention it here. Empty string if everything was clear.",
   "quiz": [
-    {"question": "Question testing the main concept?", "options": ["Option A text","Option B text","Option C text","Option D text"], "correct": 2, "explanation": "Friendly explanation of why this is correct. Max 20 words."},
-    {"question": "Question 2?", "options": ["A","B","C","D"], "correct": 0, "explanation": "Explanation."},
-    {"question": "Question 3?", "options": ["A","B","C","D"], "correct": 3, "explanation": "Explanation."},
-    {"question": "Question 4?", "options": ["A","B","C","D"], "correct": 1, "explanation": "Explanation."},
-    {"question": "Question 5?", "options": ["A","B","C","D"], "correct": 2, "explanation": "Explanation."}
+    {"question": "Question testing the main concept?", "options": ["Option A text","Option B text","Option C text","Option D text"], "correct": 2, "explanation": "Explain why the correct answer is right AND briefly address why the most tempting wrong answer is wrong. Max 35 words."},
+    {"question": "Question 2?", "options": ["A","B","C","D"], "correct": 0, "explanation": "Explain why correct AND why the most tempting wrong answer is wrong. Max 35 words."},
+    {"question": "Question 3?", "options": ["A","B","C","D"], "correct": 3, "explanation": "Explain why correct AND why the most tempting wrong answer is wrong. Max 35 words."},
+    {"question": "Question 4?", "options": ["A","B","C","D"], "correct": 1, "explanation": "Explain why correct AND why the most tempting wrong answer is wrong. Max 35 words."},
+    {"question": "Question 5?", "options": ["A","B","C","D"], "correct": 2, "explanation": "Explain why correct AND why the most tempting wrong answer is wrong. Max 35 words."}
   ]
 }
 

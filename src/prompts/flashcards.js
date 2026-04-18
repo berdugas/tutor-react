@@ -45,16 +45,24 @@ DEFINITION RULES:
 - Keep definitions short: 5-10 words maximum
 - Use simple language a ${grade} student understands
 
+EXAMPLE SENTENCE RULES:
+- Each flashcard must include a short example sentence showing the word used naturally
+- Max 8 words per example sentence
+- Must use Filipino cultural context (food, family, school, places in the Philippines)
+- The example must be in Filipino/Tagalog for Filipino subject words
+- For Science/Math terms: example may be in English using a Filipino real-world context
+- The example must NOT repeat the definition — it should show the word in action
+
 Respond ONLY with a valid JSON array. No markdown, no extra text:
 
 [
-  {"front": "word", "back": "precise definition without repeating the front word"},
-  {"front": "word", "back": "precise definition without repeating the front word"},
-  {"front": "word", "back": "precise definition without repeating the front word"},
-  {"front": "word", "back": "precise definition without repeating the front word"},
-  {"front": "word", "back": "precise definition without repeating the front word"},
-  {"front": "word", "back": "precise definition without repeating the front word"},
-  {"front": "word", "back": "precise definition without repeating the front word"},
-  {"front": "word", "back": "precise definition without repeating the front word"}
+  {"front": "word", "back": "precise definition without repeating the front word", "example": "Short Filipino sentence using the word. Max 8 words."},
+  {"front": "word", "back": "precise definition without repeating the front word", "example": "Short Filipino sentence using the word. Max 8 words."},
+  {"front": "word", "back": "precise definition without repeating the front word", "example": "Short Filipino sentence using the word. Max 8 words."},
+  {"front": "word", "back": "precise definition without repeating the front word", "example": "Short Filipino sentence using the word. Max 8 words."},
+  {"front": "word", "back": "precise definition without repeating the front word", "example": "Short Filipino sentence using the word. Max 8 words."},
+  {"front": "word", "back": "precise definition without repeating the front word", "example": "Short Filipino sentence using the word. Max 8 words."},
+  {"front": "word", "back": "precise definition without repeating the front word", "example": "Short Filipino sentence using the word. Max 8 words."},
+  {"front": "word", "back": "precise definition without repeating the front word", "example": "Short Filipino sentence using the word. Max 8 words."}
 ]`
 }

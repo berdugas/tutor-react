@@ -12,6 +12,24 @@ export default function LessonView() {
 
   return (
     <div className={styles.lessonSection}>
+      {/* Objective pill — shown in both normal and simplified mode */}
+      {lesson.objective && (
+        <div className={styles.objectivePill}>
+          🎯 {lesson.objective}
+        </div>
+      )}
+
+      {/* Hook — Alon opening, hidden in simplified mode */}
+      {!isSimplified && lesson.hook && (
+        <div className={styles.hookCard}>
+          <div className={styles.hookAlon}>🦅</div>
+          <div className={styles.hookBubble}>
+            <div className={styles.hookLabel}>Alon says</div>
+            <div className={styles.hookText}>{lesson.hook}</div>
+          </div>
+        </div>
+      )}
+
       {/* Overview */}
       <div className={styles.lessonCard}>
         <div className={styles.sectionTitle}>📖 What This Lesson Is About</div>

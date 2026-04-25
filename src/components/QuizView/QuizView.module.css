@@ -4,6 +4,20 @@
   gap: 1.25rem;
 }
 
+.attemptBadge {
+  text-align: center;
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 2rem;
+  padding: 0.3rem 1rem;
+  display: inline-block;
+  align-self: center;
+}
+
 .quizQ {
   background: var(--card);
   border-radius: 1rem;
@@ -161,4 +175,76 @@
   border-radius: 2rem;
   display: inline-block;
   padding: 0.3rem 1rem;
+}
+
+.alonBubble {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.875rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.alonBubbleIcon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+.alonBubbleText {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--card);
+  line-height: 1.5;
+}
+
+.reviewBtn {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 0.75rem;
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--card);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.reviewBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.retryBtn {
+  display: block;
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 0.75rem;
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--sky-dk);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.retryBtn:hover {
+  background: var(--card);
+}
+
+.retryNote {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.75;
 }

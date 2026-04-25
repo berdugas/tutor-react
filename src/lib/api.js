@@ -23,6 +23,37 @@ export async function callRag(topic, subject, gradeNum) {
   }
 }
 
+export async function callCacheLesson(lessonData, check, grade) {
+  // Fire-and-forget — never throws, never blocks the lesson display
+  try {
+    const resp = await fetch(`${WORKER_URL}/cache-lesson`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-AralMate-Secret': APP_SECRET
+      },
+      body: JSON.stringify({
+        topic:          check.topic || '',
+        subject:        check.subject_detected || '',
+        grade:          grade || check.grade_level_estimate || 'Grade 4',
+        quarter:        null,   // quarter filtering deferred to Stage 3
+        lesson_json:    lessonData,
+        generated_from: check.topic || ''
+      })
+    })
+    const data = await resp.json()
+    if (data.stored) {
+      console.log('[AralMate] Lesson cached:', check.subject_detected, '/', check.topic)
+    } else {
+      // Log full detail so we can diagnose failures
+      console.warn('[AralMate] Lesson cache failed (non-blocking):', data.error, data.detail || '', 'HTTP:', data.http_status || '')
+    }
+  } catch (err) {
+    console.warn('[AralMate] Lesson cache failed (non-blocking):', err.message)
+    // Never rethrow — this must never affect the lesson experience
+  }
+}
+
 export async function callWorkerText(prompt, maxTokens) {
   let resp
   try {

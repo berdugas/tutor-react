@@ -54,7 +54,7 @@ export default function LessonOutput() {
       {/* Tab content */}
       <div className={styles.tabContent}>
         {activeTab === 'lesson' && <LessonView />}
-        {activeTab === 'quiz' && <QuizView />}
+        {activeTab === 'quiz' && <QuizView onGoToLesson={() => setActiveTab('lesson')} />}
         {activeTab === 'flashcards' && <FlashcardView />}
       </div>
 

@@ -38,6 +38,11 @@ export default {
       return handleRag(request, env);
     }
 
+    // Route: POST /cache-lesson — Lesson cache storage (Stage 1)
+    if (url.pathname === "/cache-lesson") {
+      return handleCacheLesson(request, env);
+    }
+
     // Route: POST / — Kimi vision proxy (default)
     return handleKimi(request, env);
   }
@@ -84,8 +89,6 @@ async function handleRag(request, env) {
 
   try {
     // Step 1 — Embed the topic using Cohere multilingual-v3.0
-    // Cohere has no geographic restrictions -- works from any Cloudflare edge
-    // Produces 1024-dimension vectors matching our rag_documents schema
     const embedResponse = await fetch("https://api.cohere.com/v1/embed", {
       method: "POST",
       headers: {
@@ -109,8 +112,6 @@ async function handleRag(request, env) {
     const embedding = embedData.embeddings[0];
 
     // Step 2 — Query Supabase match_curriculum RPC
-    // Note: p_quarter is intentionally null -- students can scan any quarter's
-    // material regardless of their current school quarter.
     const supabaseResponse = await fetch(
       `${env.SUPABASE_URL}/rest/v1/rpc/match_curriculum_1024`,
       {
@@ -140,11 +141,9 @@ async function handleRag(request, env) {
     const results = await supabaseResponse.json();
 
     if (!results || results.length === 0) {
-      // No match found -- return null chunk, app will proceed without it
       return corsResponse(JSON.stringify({ chunk: null, similarity: null }), 200);
     }
 
-    // Return the top result, trimmed to 1500 chars to stay within token budget
     const top = results[0];
     const chunkText = top.out_chunk_text?.slice(0, 1500) || null;
 
@@ -159,8 +158,97 @@ async function handleRag(request, env) {
 
   } catch (err) {
     console.error("handleRag error:", err.message);
-    // Always return 200 with null chunk -- never crash the lesson flow
     return corsResponse(JSON.stringify({ chunk: null, error: err.message }), 200);
+  }
+}
+
+// ── Lesson cache storage ──────────────────────────────────────────────────────
+
+async function handleCacheLesson(request, env) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return corsResponse(JSON.stringify({ error: "Invalid JSON" }), 400);
+  }
+
+  const { topic, subject, grade, quarter, lesson_json, generated_from } = body;
+
+  if (!topic || !subject || !grade || !lesson_json) {
+    return corsResponse(
+      JSON.stringify({ error: "topic, subject, grade, lesson_json required" }),
+      400
+    );
+  }
+
+  try {
+    // Step 1 — Embed using Cohere multilingual-v3.0
+    // input_type "search_document" for storage; "search_query" used during retrieval
+    const embedResponse = await fetch("https://api.cohere.com/v1/embed", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.COHERE_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "embed-multilingual-v3.0",
+        texts: [`${subject} ${topic}`],
+        input_type: "search_document"
+      })
+    });
+
+    if (!embedResponse.ok) {
+      const err = await embedResponse.text();
+      console.error("Cohere embed error (cache-lesson):", err);
+      return corsResponse(JSON.stringify({ stored: false, error: "embedding failed", detail: err }), 200);
+    }
+
+    const embedData = await embedResponse.json();
+    const embedding = embedData.embeddings[0];
+
+    // Step 2 — Insert into lesson_cache
+    // Always insert — no deduplication in Stage 1
+    const insertResponse = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/lesson_cache`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": env.SUPABASE_SERVICE_KEY,
+          "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          topic,
+          subject,
+          grade,
+          quarter:        quarter || null,
+          embedding,
+          canonical_json: lesson_json,
+          generated_from: generated_from || topic,
+          hit_count:      0,
+          verified:       false
+        })
+      }
+    );
+
+    if (!insertResponse.ok) {
+      // Return the actual Supabase error detail so it shows in browser console
+      const errText = await insertResponse.text();
+      console.error("Supabase insert error (cache-lesson):", errText);
+      return corsResponse(JSON.stringify({
+        stored: false,
+        error: "insert failed",
+        detail: errText,
+        http_status: insertResponse.status
+      }), 200);
+    }
+
+    return corsResponse(JSON.stringify({ stored: true }), 200);
+
+  } catch (err) {
+    console.error("handleCacheLesson error:", err.message);
+    return corsResponse(JSON.stringify({ stored: false, error: err.message }), 200);
   }
 }
 

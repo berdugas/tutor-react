@@ -13,12 +13,13 @@ export default function ConfirmationCard() {
     confirmedContentType, setConfirmedContentType,
     confirmedSubject, setConfirmedSubject,
     confirmedGrade, setConfirmedGrade,
-    pendingCheck
+    pendingCheck, setPendingCheck
   } = useApp()
   const { runPass2 } = useAnalysis()
 
   const [openRow, setOpenRow] = useState(null)
   const [editedRows, setEditedRows] = useState(new Set())
+  const [currentTopic, setCurrentTopic] = useState(pendingCheck?.topic || '')
 
   function toggleRow(row) {
     setOpenRow(prev => prev === row ? null : row)
@@ -42,6 +43,21 @@ export default function ConfirmationCard() {
     setOpenRow(null)
   }
 
+  function handleTopicChange(value) {
+    setCurrentTopic(value)
+  }
+
+  function handleTopicBlur() {
+    const trimmed = currentTopic.trim()
+    if (!trimmed) {
+      setCurrentTopic(pendingCheck?.topic || '')
+      return
+    }
+    setPendingCheck(prev => ({ ...prev, topic: trimmed }))
+    setEditedRows(prev => new Set([...prev, 'topic']))
+    setOpenRow(null)
+  }
+
   const contentTypeLabel = CONTENT_TYPE_LABELS[confirmedContentType] || confirmedContentType || '❓ Other'
   const subjectLabel = SUBJECT_OPTIONS.find(o => o.value === confirmedSubject)?.label || confirmedSubject || '—'
   const gradeLabel = GRADE_LABELS[confirmedGrade] || confirmedGrade || '—'
@@ -52,7 +68,7 @@ export default function ConfirmationCard() {
         <div className={styles.confirmHeader}>
           <div className={styles.confirmTitle}>🦅 Alon found this</div>
           <div className={styles.confirmSub}>
-            {pendingCheck?.topic ? `"${pendingCheck.topic}"` : 'Check the details below'}
+            {currentTopic ? `"${currentTopic}"` : 'Check the details below'}
           </div>
         </div>
 
@@ -66,6 +82,32 @@ export default function ConfirmationCard() {
             />
           </div>
         )}
+
+        {/* Row: Topic */}
+        <div className={styles.confirmRow}>
+          <div className={styles.rowHeader} onClick={() => toggleRow('topic')}>
+            <div className={styles.rowInfo}>
+              <div className={styles.rowLabel}>PAKSA</div>
+              <div className={styles.rowValue}>{currentTopic}</div>
+            </div>
+            <div className={`${styles.rowEdit} ${editedRows.has('topic') ? styles.edited : ''}`}>
+              {editedRows.has('topic') ? '✓' : '✎'}
+            </div>
+          </div>
+          {openRow === 'topic' && (
+            <div className={styles.rowTopicEdit}>
+              <input
+                className={styles.topicInput}
+                type="text"
+                value={currentTopic}
+                onChange={e => handleTopicChange(e.target.value)}
+                onBlur={handleTopicBlur}
+                placeholder="Halimbawa: Pang-uri, Pantig, Fractions..."
+                autoFocus
+              />
+            </div>
+          )}
+        </div>
 
         {/* Row: Content type */}
         <div className={styles.confirmRow}>

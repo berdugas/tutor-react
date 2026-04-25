@@ -245,7 +245,7 @@ export function useAnalysis() {
       // Show results immediately — flashcards will load async
       setLessonDataAndReset(lesson)
       earnTala(20)
-      await saveLesson(lesson, check)
+      await saveLesson(lesson, check, confirmedGrade)
       setAppScreen('results')
 
       // Generate flashcards as a separate focused call

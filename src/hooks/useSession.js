@@ -1,7 +1,8 @@
 import { supabase } from '../lib/supabase'
+import { callCacheLesson } from '../lib/api'
 
 export function useSession() {
-  async function saveLesson(lessonData, check) {
+  async function saveLesson(lessonData, check, grade) {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return
@@ -64,6 +65,10 @@ export function useSession() {
       } catch (err) {
         console.error('[AralMate] tala update error:', err.message)
       }
+
+      // Step 4 — Save to lesson cache (Stage 1: store only, non-blocking)
+      // Not awaited — fire-and-forget. Lesson is already on screen by this point.
+      callCacheLesson(lessonData, check, grade)
 
     } catch (err) {
       // Outer catch — session fetch or unexpected failure. Never blocks UI.

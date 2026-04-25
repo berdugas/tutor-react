@@ -141,6 +141,35 @@
   font-weight: 700;
 }
 
+/* Topic text input */
+.rowTopicEdit {
+  padding: 0 1.5rem 1rem;
+}
+
+.topicInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 2rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.topicInput:focus {
+  border-color: var(--sky);
+}
+
+.topicInput::placeholder {
+  color: var(--muted);
+  font-weight: 400;
+}
+
 /* Confirm button */
 .confirmBtn {
   display: block;
